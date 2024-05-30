@@ -1,11 +1,7 @@
-// export default class HolbertonCourse{
-//   constructor(name) {
-//     this.name = name;
-//   }
-//   constructor(length) {
-//     this.length = length;
-//   }
-//   constructor(students) {
-//     this.students = students;
-//   }
-// }
+export default class HolbertonCourse {
+  constructor(name, length, students) {
+    this.name = name;
+    this.length = length;
+    this.students = students;
+  }
+}

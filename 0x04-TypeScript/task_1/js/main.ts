@@ -33,3 +33,36 @@ interface printTeacherFunction {
 
 const printTeacher: printTeacherFunction = (firstName: string, lastName: string): string => firstName[0] + '. ' + lastName;
 
+// interface constructorInterface {
+//     (firstName: string, lastName:string): string
+//   }
+
+interface studentClassInterface {
+  workOnHomework(): string;
+  displayName(): string;
+}
+
+class StudentClass implements studentClassInterface {
+  firstName: string;
+  lastName: string;
+
+  constructor(firstName: string, lastName: string) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+  
+  workOnHomework() {
+    return 'Currently working';
+  }
+
+  displayName() {
+    return this.firstName;
+  }
+}
+// export interface studentClassConstructor {
+//   new (firstName: string, lastName: string): IStudentClass;
+// }
+
+// export function createStudent(ctor: studentClassConstructor, firstName: string, lastName: string): studentClass {
+//   return new ctor(firstName, lastName);
+// }

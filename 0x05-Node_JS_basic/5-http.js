@@ -23,7 +23,7 @@ const getStudentCounts = (filePath) => new Promise((resolve, reject) => {
       return;
     }
 
-    const lines = data.trim().split('\n').filter(line => line.length > 0);
+    const lines = data.trim().split('\n').filter((line) => line.length > 0);
     const headers = lines[0].split(',');
     const studentAttributes = headers.slice(0, headers.length - 1);
     const studentGroups = {};
@@ -87,7 +87,7 @@ const ROUTE_HANDLERS = [
           const responseText = responseParts.join('\n');
           res.setHeader('Content-Type', 'text/plain');
           res.setHeader('Content-Length', Buffer.byteLength(responseText));
-          res.statusCode = 500;  // Set status code to 500 for error
+          res.statusCode = 500; // Set status code to 500 for error
           res.end(responseText);
         });
     },

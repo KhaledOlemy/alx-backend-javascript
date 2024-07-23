@@ -4,15 +4,16 @@ const host = 'localhost';
 const port = 1245;
 const app = http.createServer();
 
-app.on('request', (_, response) => {
+app.on('request', (req, res) => {
   const responseText = 'Hello Holberton School!';
-  response.setHeader('Content-Length', responseText.length);
-  response.statusCode = 200;
-  response.write(Buffer.from(responseText));
+  res.setHeader('Content-Length', responseText.length);
+  res.statusCode = 200;
+  res.write(Buffer.from(responseText));
+  res.end();
 });
 
 app.listen(port, host, () => {
-  process.stdout.write('Server up!');
-})
+  console.log('Server up!');
+});
 
 module.exports = app;

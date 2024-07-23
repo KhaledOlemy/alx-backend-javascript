@@ -3,51 +3,62 @@ const fs = require('fs');
 
 const app = express();
 const PORT = 1245;
-const databaseFile = process.argv.length > 2 ? process.argv[2] : '';
+const DB_FILE = process.argv.length > 2 ? process.argv[2] : '';
 
-const retrieveStudentData = (filePath) => new Promise((resolve, reject) => {
-  if (!filePath) {
+/**
+ * Counts the students in a CSV data file.
+ * @param {String} dataPath The path to the CSV data file.
+ */
+const countStudents = (dataPath) => new Promise((resolve, reject) => {
+  if (!dataPath) {
     reject(new Error('Cannot load the database'));
     return;
   }
 
-  fs.readFile(filePath, 'utf-8', (error, data) => {
-    if (error) {
+  fs.readFile(dataPath, (err, data) => {
+    if (err) {
       reject(new Error('Cannot load the database'));
       return;
     }
 
-    const lines = data.trim().split('\n').filter((line) => line.length > 0);
-    const headers = lines[0].split(',');
-    const studentAttributes = headers.slice(0, headers.length - 1);
+    const reportParts = [];
+    const fileLines = data.toString('utf-8').trim().split('\n');
     const studentGroups = {};
+    const dbFieldNames = fileLines[0].split(',');
+    const studentPropNames = dbFieldNames.slice(
+      0,
+      dbFieldNames.length - 1,
+    );
 
-    lines.slice(1).forEach((line) => {
-      const studentInfo = line.split(',');
-      const studentProps = studentInfo.slice(0, studentInfo.length - 1);
-      const department = studentInfo[studentInfo.length - 1];
-
-      if (!studentGroups[department]) {
-        studentGroups[department] = [];
+    for (const line of fileLines.slice(1)) {
+      const studentRecord = line.split(',');
+      const studentPropValues = studentRecord.slice(
+        0,
+        studentRecord.length - 1,
+      );
+      const field = studentRecord[studentRecord.length - 1];
+      if (!Object.keys(studentGroups).includes(field)) {
+        studentGroups[field] = [];
       }
+      const studentEntries = studentPropNames.map((propName, idx) => [
+        propName,
+        studentPropValues[idx],
+      ]);
+      studentGroups[field].push(Object.fromEntries(studentEntries));
+    }
 
-      const studentDetails = studentAttributes.reduce((acc, attr, index) => {
-        acc[attr] = studentProps[index];
-        return acc;
-      }, {});
-
-      studentGroups[department].push(studentDetails);
-    });
-
-    const totalStudents = Object.values(studentGroups).reduce((acc, group) => acc + group.length, 0);
-    const report = [`Number of students: ${totalStudents}`];
-
-    Object.entries(studentGroups).forEach(([department, students]) => {
-      const studentNames = students.map((student) => student.firstname).join(', ');
-      report.push(`Number of students in ${department}: ${students.length}. List: ${studentNames}`);
-    });
-
-    resolve(report.join('\n'));
+    const totalStudents = Object.values(studentGroups).reduce(
+      (pre, cur) => (pre || []).length + cur.length,
+    );
+    reportParts.push(`Number of students: ${totalStudents}`);
+    for (const [field, group] of Object.entries(studentGroups)) {
+      reportParts.push([
+        `Number of students in ${field}: ${group.length}.`,
+        'List:',
+        group.map((student) => student.firstname).join(', '),
+      ].join(' '));
+    }
+    resolve(reportParts.join('\n'));
   });
 });
 
@@ -58,7 +69,7 @@ app.get('/', (req, res) => {
 app.get('/students', (req, res) => {
   const responseParts = ['This is the list of our students'];
 
-  retrieveStudentData(databaseFile)
+  countStudents(DB_FILE)
     .then((report) => {
       responseParts.push(report);
       const responseText = responseParts.join('\n');

@@ -6,11 +6,6 @@ const HOST = 'localhost';
 const app = http.createServer();
 const DATABASE_FILE = process.argv.length > 2 ? process.argv[2] : '';
 
-/**
- * Retrieves and counts the students from a CSV file.
- * @param {string} filePath The path to the CSV file.
- * @returns {Promise<string>} A promise that resolves to the student count and details.
- */
 const getStudentCounts = (filePath) => new Promise((resolve, reject) => {
   if (!filePath) {
     reject(new Error('Cannot load the database'));

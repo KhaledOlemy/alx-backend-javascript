@@ -5,11 +5,6 @@ const app = express();
 const PORT = 1245;
 const databaseFile = process.argv.length > 2 ? process.argv[2] : '';
 
-/**
- * Retrieves and counts students from a CSV file.
- * @param {String} filePath The path to the CSV data file.
- * @returns {Promise<string>} A promise that resolves to the student count and details.
- */
 const retrieveStudentData = (filePath) => new Promise((resolve, reject) => {
   if (!filePath) {
     reject(new Error('Cannot load the database'));

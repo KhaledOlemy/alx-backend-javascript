@@ -1,32 +1,45 @@
 import fs from 'fs';
 
+/**
+ * Reads the data of students in a CSV data file.
+ * @param {String} filePath The path to the CSV data file.
+ * @returns {Promise<{
+ *   String: {firstname: String, lastname: String, age: number}[]
+ * }>}
+ */
 const readDatabase = (filePath) => new Promise((resolve, reject) => {
   if (!filePath) {
     reject(new Error('Cannot load the database'));
     return;
   }
 
-  fs.readFile(filePath, 'utf-8', (err, data) => {
+  fs.readFile(filePath, (err, data) => {
     if (err) {
       reject(new Error('Cannot load the database'));
       return;
     }
 
-    const lines = data.trim().split('\n');
-    const header = lines[0].split(',');
-    const students = {};
+    const fileLines = data.toString('utf-8').trim().split('\n');
+    const studentGroups = {};
+    const dbFieldNames = fileLines[0].split(',');
+    const studentPropNames = dbFieldNames.slice(0, dbFieldNames.length - 1);
 
-    lines.slice(1).forEach((line) => {
-      const student = line.split(',');
-      const major = student[header.length - 1];
+    fileLines.slice(1).forEach((line) => {
+      const studentRecord = line.split(',');
+      const studentPropValues = studentRecord.slice(0, studentRecord.length - 1);
+      const field = studentRecord[studentRecord.length - 1];
 
-      if (!students[major]) {
-        students[major] = [];
+      if (!studentGroups[field]) {
+        studentGroups[field] = [];
       }
-      students[major].push(student[0]);
+
+      const studentEntries = studentPropNames.map((propName, idx) => [
+        propName, studentPropValues[idx],
+      ]);
+      studentGroups[field].push(Object.fromEntries(studentEntries));
     });
 
-    resolve(students);
+    resolve(studentGroups);
   });
 });
 

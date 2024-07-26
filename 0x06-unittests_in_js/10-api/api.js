@@ -7,11 +7,12 @@ app.get('/cart/:id(\\d+)', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
+  let username;
   if (req.body) {
-    const username = req.body.userName;
+    username = req.body.userName;
   }
   else {
-    const usename = '';
+    usename = '';
   }
 
   res.send(`Welcome ${username}`);

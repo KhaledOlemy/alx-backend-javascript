@@ -2,6 +2,8 @@ const express = require('express');
 const PORT = 7865;
 const app = express();
 
+app.use(express.json());
+
 app.get('/cart/:id(\\d+)', (req, res) => {
   res.send(`Payment methods for cart ${req.params.id}`);
 });
@@ -22,7 +24,7 @@ app.get('/available_payments', (_req, res) => {
   res.json({ payment_methods: { credit_cards: true, paypal: false } });
 });
 
-app.get('/', (_, res) => {
+app.get('/', (_req, res) => {
   res.send('Welcome to the payment system');
 });
 
